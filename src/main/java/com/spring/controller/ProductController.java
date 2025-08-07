@@ -30,7 +30,8 @@ import com.spring.repository.ProductRepository;
 
 
 
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/pharma")
 public class ProductController {
@@ -39,12 +40,12 @@ public class ProductController {
     private ProductRepository productRepository;
 
     @GetMapping("/product")
-    public List<Product> getAllEmployees() {
+    public List<Product> getAllProduct() {
         return productRepository.findAll();
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<Product> getEmployeeById(@PathVariable(value = "id") Long productId) {
+    public ResponseEntity<Product> getProductById(@PathVariable(value = "id") Long productId) {
     	Product product = productRepository.getById(productId);
         return ResponseEntity.ok().body(product);
     }
@@ -67,9 +68,10 @@ public class ProductController {
     	product.setSubcategory(productDetails.getSubcategory());
     	product.setStock(productDetails.getStock());
     	product.setImage(productDetails.getImage());
-        
+    	System.out.println("gfgf");
         final Product updatedProduct = productRepository.save(product);
         return ResponseEntity.ok(updatedProduct);
+        
     }
 
     @DeleteMapping("/product/{id}")

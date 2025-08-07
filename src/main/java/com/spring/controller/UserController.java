@@ -24,13 +24,66 @@ import com.spring.model.User;
 
 
 
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(value = "*")
 @RestController
 @RequestMapping("/pharma")
 public class UserController implements ICommonController<User> {
 	
+//	@Autowired
+//	private UserDAO userDao;
+//
+//    @GetMapping("/user")
+//    public List<User> getAll() {
+//        return userDao.getAll();
+//    }
+//
+//    @GetMapping("/user/{id}")
+//    public ResponseEntity<User> getById(@PathVariable(value = "id") Long userId) {
+//    	User user = userDao.getUserById(userId);
+//        return ResponseEntity.ok().body(user);
+//    }
+//
+//    @PostMapping("/user")
+//    public User save(@RequestBody User user) {
+//        
+//    	return userDao.save(user);
+//    }
+//    
+//    @PostMapping("/user/login")
+//    public User login(@RequestBody User user) {
+//        
+//    	return userDao.getUserByUsername(user);
+//    }
+//
+//    @PutMapping("/user/{id}")
+//    public ResponseEntity<User> update(@PathVariable(value = "id") Long userId,
+//         @Validated @RequestBody User userDetails) {
+//    	User user = userDao.getUserById(userId);
+//    	user.setName(userDetails.getName());
+//    	user.setEmail(userDetails.getEmail());
+//    	user.setPhone(userDetails.getPhone());
+//    	user.setUsername(userDetails.getUsername());
+//    	user.setPassword(userDetails.getPassword());
+//    	user.setConfirmpassword(userDetails.getConfirmpassword());
+//        final User updateduser = userDao.save(user);
+//        return ResponseEntity.ok(updateduser);
+//    }
+//
+//    @DeleteMapping("/user/{id}")
+//    public Map<String, Boolean> delete(@PathVariable(value = "id") Long userId){
+//    	User user = userDao.getUserById(userId);
+//    	userDao.delete(user);
+//        Map<String, Boolean> response = new HashMap<>();
+//        response.put("deleted", Boolean.TRUE);
+//        return response;
+//    }
+	
+	
+	//rolebased
+	
 	@Autowired
-	private UserDAO userDao;
+    private UserDAO userDao;
 
     @GetMapping("/user")
     public List<User> getAll() {
@@ -39,40 +92,55 @@ public class UserController implements ICommonController<User> {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<User> getById(@PathVariable(value = "id") Long userId) {
-    	User user = userDao.getUserById(userId);
+        User user = userDao.getUserById(userId);
         return ResponseEntity.ok().body(user);
     }
 
     @PostMapping("/user")
     public User save(@RequestBody User user) {
-        //return employeeDAO.save(employee);
-    	return userDao.save(user);
+        return userDao.save(user);
+        
     }
-    
+
     @PostMapping("/user/login")
-    public User login(@RequestBody User user) {
-        //return employeeDAO.save(employee);
-    	return userDao.getUserByUsername(user);
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+        String username = loginData.get("username");
+        String password = loginData.get("password");
+
+        User user = userDao.login(username, password);
+        if (user == null) {
+            return ResponseEntity.badRequest().body("Invalid username or password.");
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("role", user.getRole());
+        response.put("name", user.getName());
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/user/{id}")
     public ResponseEntity<User> update(@PathVariable(value = "id") Long userId,
-         @Validated @RequestBody User userDetails) {
-    	User user = userDao.getUserById(userId);
-    	user.setName(userDetails.getName());
-    	user.setEmail(userDetails.getEmail());
-    	user.setPhone(userDetails.getPhone());
-    	user.setUsername(userDetails.getUsername());
-    	user.setPassword(userDetails.getPassword());
-    	user.setConfirmpassword(userDetails.getConfirmpassword());
+                                       @Validated @RequestBody User userDetails) {
+        User user = userDao.getUserById(userId);
+        user.setName(userDetails.getName());
+        user.setEmail(userDetails.getEmail());
+        user.setPhone(userDetails.getPhone());
+        user.setUsername(userDetails.getUsername());
+        user.setPassword(userDetails.getPassword());
+        user.setConfirmpassword(userDetails.getConfirmpassword());
+        user.setRole(userDetails.getRole());
+
         final User updateduser = userDao.save(user);
         return ResponseEntity.ok(updateduser);
     }
 
     @DeleteMapping("/user/{id}")
-    public Map<String, Boolean> delete(@PathVariable(value = "id") Long userId){
-    	User user = userDao.getUserById(userId);
-    	userDao.delete(user);
+    public Map<String, Boolean> delete(@PathVariable(value = "id") Long userId) {
+        User user = userDao.getUserById(userId);
+        userDao.delete(user);
         Map<String, Boolean> response = new HashMap<>();
         response.put("deleted", Boolean.TRUE);
         return response;

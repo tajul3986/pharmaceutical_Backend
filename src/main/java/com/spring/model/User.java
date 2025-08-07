@@ -33,6 +33,9 @@ public class User {
 	@Column(name = "u_confirmpassword")
 	private String confirmpassword;
 	
+	@Column(name = "u_role")
+    private String role;
+	
 	
 	
 //	private String createdByCode;
@@ -43,7 +46,6 @@ public class User {
 //	private String updatedByCode;
 //	private String updatedByName;
 //	private String updatedAt;
-	
 	
 	
 
@@ -103,5 +105,12 @@ public class User {
 		this.confirmpassword = confirmpassword;
 	}
 
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 
 }

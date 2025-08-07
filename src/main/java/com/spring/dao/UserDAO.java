@@ -25,9 +25,17 @@ public class UserDAO {
         return entityManager.unwrap(Session.class);
     }
 
+//    public User save(User u){
+//    	getSession().save(u);
+//    	getSession().flush();
+//        return u;
+//    }
+    
+    
+    //rolebased
     public User save(User u){
-    	getSession().save(u);
-    	getSession().flush();
+        getSession().saveOrUpdate(u);
+        getSession().flush();
         return u;
     }
 
@@ -37,12 +45,38 @@ public class UserDAO {
         return us;
     }
 
-    public User getUserByUsername(User user) {
-        String sql = "from user where username = '" + user.getUsername() + "'";
-        List<User> userList = getSession().createQuery(sql).list();
-        return userList.get(0);
+//    public User getUserByUsername(User user) {
+//        String sql = "from user where username = '" + user.getUsername() + "'";
+//        List<User> userList = getSession().createQuery(sql).list();
+//        return userList.get(0);
+//
+//    }
+    
+  //rolebased
+    public User getUserByUsername(String username) {
+        String sql = "from user where username = :username";
+        List<User> userList = getSession()
+                .createQuery(sql, User.class)
+                .setParameter("username", username)
+                .getResultList();
 
+        return userList.isEmpty() ? null : userList.get(0);
     }
+
+  //rolebased
+    public User login(String username, String password) {
+        String sql = "from user where username = :username and password = :password";
+        List<User> userList = getSession()
+                .createQuery(sql, User.class)
+                .setParameter("username", username)
+                .setParameter("password", password)
+                .getResultList();
+
+        return userList.isEmpty() ? null : userList.get(0);
+    }
+    
+    
+    
     public User getUserById(long uid) {
         String sql = "from user where id = '" + uid + "'";
         List<User> userList = getSession().createQuery(sql).list();
